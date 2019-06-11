@@ -19,3 +19,17 @@ for line in title_list:
     temp_title_list.append(line)
     
 temp_title_list[:15]
+
+
+# ========================================
+# specific words alignmenmt match pattern
+# ========================================
+
+txt = '桐生信金、芙蓉総合リースと業務提携'
+txt = 'トヨタ、北京汽車と提携'
+txt = '工機ホールディングス×助太刀 出資と戦略提携について'
+
+match = re.search(r'(と(..)?提携)', txt)
+
+if match:
+    print(txt)
