@@ -28,3 +28,105 @@ def rm_special_chars(text):
     for char in special_chars:
         text = text.replace(char, '')
     return text
+
+
+# ========================================
+# correct mispell
+# ========================================
+
+mispell_dict = {
+    "I'd": 'I would',
+    "I'll": 'I will',
+    "I'm": 'I am',
+    "I've": 'I have',
+    "ain't": 'is not',
+    "aren't": 'are not',
+    "can't": 'cannot',
+    'cancelled': 'canceled',
+    'centre': 'center',
+    'colour': 'color',
+    "could've": 'could have',
+    "couldn't": 'could not',
+    "didn't": 'did not',
+    "doesn't": 'does not',
+    "don't": 'do not',
+    'enxiety': 'anxiety',
+    'favourite': 'favorite',
+    "hadn't": 'had not',
+    "hasn't": 'has not',
+    "haven't": 'have not',
+    "he'd": 'he would',
+    "he'll": 'he will',
+    "he's": 'he is',
+    "here's": 'here is',
+    "how's": 'how is',
+    "i'd": 'i would',
+    "i'll": 'i will',
+    "i'm": 'i am',
+    "i've": 'i have',
+    "isn't": 'is not',
+    "it'll": 'it will',
+    "it's": 'it is',
+    'labour': 'labor',
+    "let's": 'let us',
+    "might've": 'might have',
+    "must've": 'must have',
+    'organisation': 'organization',
+    "she'd": 'she would',
+    "she'll": 'she will',
+    "she's": 'she is',
+    "shouldn't": 'should not',
+    "that's": 'that is',
+    'theatre': 'theater',
+    "there's": 'there is',
+    "they'd": 'they would',
+    "they'll": 'they will',
+    "they're": 'they are',
+    "they've": 'they have',
+    'travelling': 'traveling',
+    "wasn't": 'was not',
+    'watsapp': 'whatsapp',
+    "we'd": 'we would',
+    "we'll": 'we will',
+    "we're": 'we are',
+    "we've": 'we have',
+    "weren't": 'were not',
+    "what's": 'what is',
+    "where's": 'where is',
+    "who'll": 'who will',
+    "who's": 'who is',
+    "who've": 'who have',
+    "won't": 'will not',
+    "would've": 'would have',
+    "wouldn't": 'would not',
+    "you'd": 'you would',
+    "you'll": 'you will',
+    "you're": 'you are',
+    "you've": 'you have',
+    '，': ',',
+    '／': '/',
+    '？': '?'
+}
+
+def _get_mispell(mispell_dict):
+    mispell_re = re.compile('(%s)' % '|'.join(['\s*'.join(key) 
+                                               for key in mispell_dict.keys()]))
+    return mispell_dict, mispell_re
+
+mispellings, mispellings_re = _get_mispell(mispell_dict)
+
+def replace_typical_misspell(text):
+    def replace(match):
+        return mispellings[re.sub('\s', '', match.group(0))]
+    return mispellings_re.sub(replace, text)
+  
+def process_text_rnn(text):
+    """Process text for RNNs."""
+    if text is None:
+            return ''
+    # text = clean_text(text)
+    text = replace_typical_misspell(text)
+    for char in '()*,./:;\\\t\n':
+        text = text.replace(char, '')
+    text = re.sub('\s+', ' ', text)
+    return text
