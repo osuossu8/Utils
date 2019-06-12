@@ -33,3 +33,24 @@ match = re.search(r'(と(..)?提携)', txt)
 
 if match:
     print(txt)
+
+
+# ========================================
+# remove urls and kakko
+# ========================================
+
+def remove_urls_and_kakko(text):
+    '''
+    * url や 括弧(内の語も含む) を取り除く
+    * how to use
+    df['text_column'] = df['text_column'].apply(remove_urls_and_kakko)
+    '''
+
+    text = re.sub(r'(https?://[a-zA-Z0-9.-]*)', r'', text)
+    
+    # 全角括弧
+    text = re.sub(r'\（.+?\）', r'', text)
+    
+    # 【】
+    text = re.sub(r'\【.+?\】', r'', text)
+    return text
