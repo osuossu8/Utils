@@ -29,6 +29,19 @@ def rm_special_chars(text):
         text = text.replace(char, '')
     return text
 
+def clean_text(x):
+    x = str(x)        
+    x = x.replace('\n', '') # 改行削除
+    x = x.replace('\t', '') # タブ削除
+    x = re.sub(re.compile(r'[!-\/:-@[-`{-~]'), ' ', x) 
+    x = re.sub(r'\[math\]', ' LaTex math ', x) # LaTex削除
+    x = re.sub(r'\[\/math\]', ' LaTex math ', x) # LaTex削除
+    x = re.sub(r'\\', ' LaTex ', x) # LaTex削除   
+    x = re.sub(r'(\d+)([a-zA-Z])', '\g<1> \g<2>', x) # タグの削除
+    x = re.sub(r'(\d+) (th|st|nd|rd) ', '\g<1>\g<2> ', x) # タグの削除
+    x = re.sub(r'(\d+),(\d+)', '\g<1>\g<2>', x) # タグの削除 
+    x = re.sub(' +', ' ',x) # 連続して出現する空白の削除   
+    return x
 
 # ========================================
 # detect japanese
