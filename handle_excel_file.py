@@ -53,3 +53,23 @@ for i in range(len(os.listdir('drive/My Drive/dir_name/'))):
     
 df = pd.concat(df_list, sort=True).reset_index(drop=True)
 print(df.shape)
+
+
+# ===============================================================
+# to_excel() 時の IllegalCharacterError が出たときの対応
+# 
+# https://qiita.com/analytics-hiro/items/e6581019a11de798002b
+# ================================================================
+
+def illegal_char_remover(data):
+    ILLEGAL_CHARACTERS_RE = re.compile(
+        r'[\000-\010]|[\013-\014]|[\016-\037]|[\x00-\x1f\x7f-\x9f]|[\uffff]')
+    """Remove ILLEGAL CHARACTER."""
+    if isinstance(data, str):
+        return ILLEGAL_CHARACTERS_RE.sub("", data)
+    else:
+        return data
+
+sub = sub.applymap(illegal_char_remover)
+
+sub.to_excel('drive/My Drive/dir_name/file_name.xlsx', sheet_name='a')
