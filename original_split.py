@@ -16,5 +16,9 @@ def original_split(df, target, test_size=0.2, seed=42):
     X = pd.concat([df_pos, df_neg_sample])
     
     train, valid = train_test_split(X, test_size=test_size, random_state=seed)
+
+    if save:
+        train.to_csv(path)
+        valid.to_csv(path)
     
     return train, valid
