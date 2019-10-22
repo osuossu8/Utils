@@ -18,7 +18,7 @@ def original_split(df, target, test_size=0.2, seed=42):
     train, valid = train_test_split(X, test_size=test_size, random_state=seed)
 
     if save:
-        train.to_csv(path)
-        valid.to_csv(path)
+        train.to_csv(os.path.join(path, 'train.csv'))
+        valid.to_csv(os.path.join(path, 'valid.csv'))
     
     return train, valid
