@@ -2,8 +2,6 @@ import re
 import MeCab
 
 
-import MeCab
-
 class MecabTokenizer(object):
     def __init__(self):
         self.wakati = MeCab.Tagger('-Owakati')
