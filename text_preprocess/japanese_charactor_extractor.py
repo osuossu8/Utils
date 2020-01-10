@@ -21,7 +21,7 @@ class JapaneseCharactorExtractor(object):
         return moji_list, percentage_moji
 
 
-sentence = "私かえるるる！早起きが苦手でサンドウィッチが大好きな至って普通の高校生。"
+sentence = "私かえるるる！夜更かしが得意でネトゲ好きな普通の高校生。"
 
 knj_e = JapaneseCharactorExtractor("kanji")
 ktkn_e = JapaneseCharactorExtractor("katakana")
@@ -30,3 +30,9 @@ hrgn_e = JapaneseCharactorExtractor("hiragana")
 print(knj_e.generate_features(sentence))
 print(ktkn_e.generate_features(sentence))
 print(hrgn_e.generate_features(sentence))
+
+"""
+(['私', '夜更', '得意', '好', '普通', '高校生'], 21.428571428571427)
+(['ネトゲ'], 3.571428571428571)
+(['かえるるる', 'かしが', 'で', 'きな', 'の'], 17.857142857142858)
+"""
