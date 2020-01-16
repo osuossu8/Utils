@@ -28,37 +28,26 @@
 # upload user datasets
 # ====================
 
-# only this part, I worked at local mac pc...
-# I need overwrite some file.
+!mkdir upload
 
-kaggle datasets init -p hoge
-vi hoge/dataset-metadata.json
+!kaggle datasets init -p upload
 
-# before
-{
- "title": "INSERT_TITLE_HERE",
- "id": "kaerunantoka/INSERT_SLUG_HERE",
- "licenses": [
-  {
-   "name": "CCO-1.0"
-  }
- ]
-}
+!cp fuga.txt upload
 
-# overwrite hoge/dataset-metadata.json
-
-# after
+```
+%%writefile upload/dataset-metadata.json
 {
  "title": "hogefuga", # The dataset title must be between 6 and 50 character
  "id": "kaerunantoka/hogefuga",
  "licenses": [
   {
-   "name": "CCO-1.0"
+   "name": "CC0-1.0"
   }
  ]
 }
+```
 
 # finally
-kaggle datasets create -p hoge
+!kaggle datasets create -p upload
 
 # I can access https://www.kaggle.com/kaerunantoka/hogefuga
