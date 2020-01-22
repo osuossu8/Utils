@@ -2,7 +2,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-# https://arxiv.org/pdf/1708.02002.pdf
+# paper https://arxiv.org/pdf/1708.02002.pdf
+# 解説 https://qiita.com/agatan/items/53fe8d21f2147b0ac982
+# https://datascience.stackexchange.com/questions/31685/weighted-cross-entropy-for-imbalanced-dataset-multiclass-classification
 
 class FocalLoss(nn.Module):
     def __init__(self, gamma=2):
