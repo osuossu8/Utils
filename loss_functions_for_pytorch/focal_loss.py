@@ -5,21 +5,31 @@ import torch.nn.functional as F
 # paper https://arxiv.org/pdf/1708.02002.pdf
 # 解説 https://qiita.com/agatan/items/53fe8d21f2147b0ac982
 # https://datascience.stackexchange.com/questions/31685/weighted-cross-entropy-for-imbalanced-dataset-multiclass-classification
+# from https://www.kaggle.com/hmendonca/kaggle-pytorch-utility-script
+
 
 class FocalLoss(nn.Module):
-    def __init__(self, gamma=2):
-        super().__init__()
+    ''' cross entropy focal loss '''
+    def __init__(self, alpha=None, gamma=2., reduction='mean'):
+        super(FocalLoss, self).__init__()
+        self.alpha = torch.tensor(alpha) if alpha is not None else None
         self.gamma = gamma
+        self.reduction = reduction
 
-    def forward(self, logit, target):
-        target = target.float()
-        max_val = (-logit).clamp(min=0)
-        loss = logit - logit * target + max_val + \
-               ((-max_val).exp() + (-logit - max_val).exp()).log()
+    def forward(self, inputs, targets):
+        if self.alpha is not None:
+            self.alpha = self.alpha.type(inputs.type(), non_blocking=True) # fix type and device
+            alpha = self.alpha[targets]
+        else:
+            alpha = 1.
 
-        invprobs = F.logsigmoid(-logit * (target * 2.0 - 1.0))
-        loss = (invprobs * self.gamma).exp() * loss
-        if len(loss.size())==2:
-            loss = loss.sum(dim=1)
-        return loss.mean()
+        CE_loss = F.cross_entropy(inputs, targets, reduction='none')
+        pt = torch.exp(-CE_loss)
+        F_loss = alpha * (1-pt)**self.gamma * CE_loss
+
+        if self.reduction == 'sum':
+            return F_loss.sum()
+        elif self.reduction == 'mean':
+            return F_loss.mean()
+        return F_loss
 
