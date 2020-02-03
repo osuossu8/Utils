@@ -1,5 +1,6 @@
 import re
 import MeCab
+import mojimoji
 
 
 class MecabTokenizer(object):
@@ -47,7 +48,11 @@ class TextPreprocessorJP(object):
                        '·', '_', '{', '}', '©', '^', '®', '`',  '<', '→', '°', '€', '™', '›',  '♥', '←', '×', '§', '″', '′', 'Â', '█', '½', 'à', '…', '\n', '\xa0', '\t',
                        '“', '★', '”', '–', '●', 'â', '►', '−', '¢', '²', '¬', '░', '¶', '↑', '±', '¿', '▾', '═', '¦', '║', '―', '¥', '▓', '—', '‹', '─', '\u3000', '\u202f',
                        '▒', '：', '¼', '⊕', '▼', '▪', '†', '■', '’', '▀', '¨', '▄', '♫', '☆', 'é', '¯', '♦', '¤', '▲', 'è', '¸', '¾', 'Ã', '⋅', '‘', '∞', '«',
-                       '∙', '）', '↓', '、', '│', '（', '»', '，', '♪', '╩', '╚', '³', '・', '╦', '╣', '╔', '╗', '▬', '❤', 'ï', 'Ø', '¹', '≤', '‡', '√', ]
+                       '∙', '）', '↓', '、', '│', '（', '»', '，', '♪', '╩', '╚', '³', '・', '╦', '╣', '╔', '╗', '▬', '❤', 'ï', 'Ø', '¹', '≤', '‡', '√', '（', '）', '～',
+                       '➡', '％', '⇒', '▶', '「', '➄', '➆',  '➊', '➋', '➌', '➍', '⓪', '①', '②', '③', '④', '⑤', '⑰', '❶', '❷', '❸', '❹', '❺', '❻', '❼', '❽',  
+                       '＝', '※', '㈱', '､', '△', '℮', 'ⅼ', '‐', '｣', '┝', '↳', '◉', '／', '＋', '○',
+                       '【', '】', '✅', '☑', '➤', 'ﾞ', '↳', '〶', '☛', '｢', '⁺', '『', '≫',
+                       ]
 
         self.html_tags = ['<p>', '</p>', '<table>', '</table>', '<tr>', '</tr>', '<ul>', '<ol>', '<dl>', '</ul>', '</ol>',
                           '</dl>', '<li>', '<dd>', '<dt>', '</li>', '</dd>', '</dt>', '<h1>', '</h1>',
@@ -83,16 +88,27 @@ class TextPreprocessorJP(object):
             x = x.replace(r, '')
         return x
 
-    def replace_num(self, x):
-        x = re.sub('[0-9]{5,}', '', x)
-        x = re.sub('[0-9]{4}', '', x)
-        x = re.sub('[0-9]{3}', '', x)
-        x = re.sub('[0-9]{2}', '', x)
+    def replace_num(self, x, use_num=True):
+        if use_num:
+            x = re.sub('[0-9]{5,}', '#####', x)
+            x = re.sub('[0-9]{4}', '####', x)
+            x = re.sub('[0-9]{3}', '###', x)
+            x = re.sub('[0-9]{2}', '##', x)
+            for i in self.numbers:
+                x = x.replace(str(i), '#')
+        else:
+            x = re.sub('[0-9]{5,}', '', x)
+            x = re.sub('[0-9]{4}', '', x)
+            x = re.sub('[0-9]{3}', '', x)
+            x = re.sub('[0-9]{2}', '', x)    
+            for i in self.numbers:
+                x = x.replace(str(i), '')        
         return x
 
     def clean_puncts(self, x):
         for punct in self.puncts:
-            x = x.replace(punct, f' {punct} ')
+            # x = x.replace(punct, f' {punct} ')
+            x = x.replace(punct, '')
         return x
 
     def clean_text_jp(self, x):
@@ -105,19 +121,25 @@ class TextPreprocessorJP(object):
         x = re.sub(r'\[math\]', ' LaTex math ', x) # LaTex削除
         x = re.sub(r'\[\/math\]', ' LaTex math ', x) # LaTex削除
         x = re.sub(r'\\', ' LaTex ', x) # LaTex削除
-        for i in self.numbers:
-            x = x.replace(str(i), '')
         x = re.sub(' +', ' ', x)
-        return x   
+        return x
+
+    def han_to_zen(self, x):
+        word = []
+        for x_s in x.split():
+            x_s = mojimoji.han_to_zen(x_s)
+            word.append(x_s)  
+        return " ".join(word)
 
     def preprocess(self, sentence):
         sentence = sentence.fillna(" ")
         sentence = sentence.progress_apply(lambda x: self._pre_preprocess(x))
         sentence = sentence.progress_apply(lambda x: self.rm_spaces(x))
         sentence = sentence.progress_apply(lambda x: self.clean_puncts(x))
-        sentence = sentence.progress_apply(lambda x: self.replace_num(x))
+        sentence = sentence.progress_apply(lambda x: self.replace_num(x, use_num=False))
         sentence = sentence.progress_apply(lambda x: self.clean_html_tags(x))
         sentence = sentence.progress_apply(lambda x: self.clean_text_jp(x))
+        sentence = sentence.progress_apply(lambda x: self.han_to_zen(x))
         return sentence
 
 # tok = MecabTokenizer()
