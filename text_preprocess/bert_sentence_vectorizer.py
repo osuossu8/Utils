@@ -35,12 +35,12 @@ class BertSequenceVectorizer:
         inputs_tensor = torch.tensor([inputs], dtype=torch.long).to(self.device)
         masks_tensor = torch.tensor([masks], dtype=torch.long).to(self.device)
         
-        sep_out, pooled_out = self.bert_model(inputs_tensor, masks_tensor)
+        seq_out, pooled_out = self.bert_model(inputs_tensor, masks_tensor)
 
         if torch.cuda.is_available():    
-            return sep_out[0][0].cpu().detach().numpy() # 0番目は [CLS] token, 768 dim の文章特徴量
+            return seq_out[0][0].cpu().detach().numpy() # 0番目は [CLS] token, 768 dim の文章特徴量
         else:
-            return sep_out[0][0].detach().numpy()
+            return seq_out[0][0].detach().numpy()
 
 
 def cos_sim_matrix(matrix):
