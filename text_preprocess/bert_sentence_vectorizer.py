@@ -14,7 +14,7 @@ tqdm.pandas()
 class BertSequenceVectorizer:
     def __init__(self):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.model_name = 'bert-base-japanese-whole-word-masking'
+        self.model_name = 'cl-tohoku/bert-base-japanese-whole-word-masking'
         self.tokenizer = BertJapaneseTokenizer.from_pretrained(self.model_name)
         self.bert_model = transformers.BertModel.from_pretrained(self.model_name)
         self.bert_model = self.bert_model.to(self.device)
